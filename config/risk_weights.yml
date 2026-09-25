@@ -1,0 +1,14 @@
+# Weights for the composite district risk score (must sum to 1.0)
+weights:
+  rain_deficit: 0.40
+  soil_dryness: 0.25
+  heat_stress: 0.20
+  low_soil_carbon: 0.15
+
+tiers:
+  high: 75
+  elevated: 55
+  watch: 35
+
+baseline_years: [1991, 2020]
+heat_threshold_c: 35
