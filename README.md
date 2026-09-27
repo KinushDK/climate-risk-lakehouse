@@ -1,4 +1,5 @@
 # Climate Resilience & Resource Allocation Platform
+![tests](https://github.com/KinushDK/climate-risk-lakehouse/actions/workflows/tests.yml/badge.svg)
 
 **Problem:** Field offices across 290 sub-counties in Kenya's 47 counties need to decide where drought-relief and agricultural-support resources go first. 
 Rainfall, temperature and soil data exist but are scattered across raw files and APIs, so prioritisation is slow and hard to justify.
