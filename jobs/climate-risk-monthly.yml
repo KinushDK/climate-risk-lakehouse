@@ -1,0 +1,69 @@
+resources:
+  jobs:
+    climate_risk_monthly:
+      name: climate-risk-monthly
+      schedule:
+        quartz_cron_expression: 10 0 6 5 * ?
+        timezone_id: Africa/Nairobi
+        pause_status: UNPAUSED
+      tasks:
+        - task_key: bronze_ingest
+          notebook_task:
+            notebook_path: /Workspace/Users/kinuthiadennis04@gmail.com/climate-risk-lakehouse/notebooks/01_bronze_ingest
+            source: WORKSPACE
+          environment_key: bronze_ingest_environment
+        - task_key: silver_clean
+          depends_on:
+            - task_key: bronze_ingest
+          notebook_task:
+            notebook_path: /Workspace/Users/kinuthiadennis04@gmail.com/climate-risk-lakehouse/notebooks/02_silver_clean
+            source: WORKSPACE
+          email_notifications:
+            on_failure:
+              - vmars20@gmail.com
+        - task_key: gold_features
+          depends_on:
+            - task_key: silver_clean
+          notebook_task:
+            notebook_path: /Workspace/Users/kinuthiadennis04@gmail.com/climate-risk-lakehouse/notebooks/03_gold_features
+            source: WORKSPACE
+          email_notifications:
+            on_failure:
+              - vmars20@gmail.com
+          environment_key: bronze_ingest_environment
+        - task_key: risk_score
+          depends_on:
+            - task_key: gold_features
+          notebook_task:
+            notebook_path: /Workspace/Users/kinuthiadennis04@gmail.com/climate-risk-lakehouse/notebooks/04_gold_risk_score
+            source: WORKSPACE
+          email_notifications:
+            on_failure:
+              - vmars20@gmail.com
+        - task_key: allocation
+          depends_on:
+            - task_key: risk_score
+          notebook_task:
+            notebook_path: /Workspace/Users/kinuthiadennis04@gmail.com/climate-risk-lakehouse/notebooks/05_allocation
+            source: WORKSPACE
+          email_notifications:
+            on_failure:
+              - vmars20@gmail.com
+        - task_key: quality_checks
+          depends_on:
+            - task_key: allocation
+          notebook_task:
+            notebook_path: /Workspace/Users/kinuthiadennis04@gmail.com/climate-risk-lakehouse/notebooks/06_quality_checks
+            base_parameters:
+              run_id: "{{job.run_id}}"
+            source: WORKSPACE
+          email_notifications:
+            on_failure:
+              - vmars20@gmail.com
+      queue:
+        enabled: true
+      environments:
+        - environment_key: bronze_ingest_environment
+          spec:
+            environment_version: "6"
+      performance_target: PERFORMANCE_OPTIMIZED
