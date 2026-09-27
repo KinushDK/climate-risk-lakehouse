@@ -1,0 +1,1296 @@
+{
+  "datasets": [
+    {
+      "name": "2e61b1a5",
+      "displayName": "risk_by_month",
+      "config": {
+        "version": "1.1",
+        "source": "SELECT d.county_name, d.district_name, d.lat, d.lon,\r\n       r.as_of_month, r.risk_score, r.risk_tier,\r\n       r.rain_pct_of_normal, r.rain_severity, r.soil_severity, r.heat_severity,\r\n       p.population, p.is_urban, r.soil_imputed\r\nFROM workspace.climate_gold.district_risk_score r\r\nJOIN workspace.climate_silver.districts d USING (district_id)\r\nJOIN workspace.climate_silver.district_population p USING (district_id)\r\nWHERE r.as_of_month >= '2005-01-01'",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "risk_scores",
+      "displayName": "District Risk Scores",
+      "config": {
+        "source": "workspace.climate_gold.district_risk_score",
+        "measures": [
+          {
+            "name": "avg_risk_score",
+            "expr": "AVG(risk_score)",
+            "displayName": "Avg Risk Score",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 1.0
+              }
+            }
+          },
+          {
+            "name": "max_risk_score",
+            "expr": "MAX(risk_score)",
+            "displayName": "Max Risk Score",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 1.0
+              }
+            }
+          },
+          {
+            "name": "avg_rain_z",
+            "expr": "AVG(rain_z)",
+            "displayName": "Avg Rainfall Z-Score",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          },
+          {
+            "name": "avg_soil_z",
+            "expr": "AVG(soil_z)",
+            "displayName": "Avg Soil Moisture Z-Score",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          },
+          {
+            "name": "avg_heat_z",
+            "expr": "AVG(heat_z)",
+            "displayName": "Avg Heat Z-Score",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          },
+          {
+            "name": "avg_rain_pct_normal",
+            "expr": "AVG(rain_pct_of_normal)",
+            "displayName": "Avg Rainfall % of Normal",
+            "format": {
+              "type": "percentage",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 1.0
+              }
+            }
+          },
+          {
+            "name": "district_count",
+            "expr": "COUNT(DISTINCT district_id)",
+            "displayName": "Districts Assessed",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          },
+          {
+            "name": "avg_rain_severity",
+            "expr": "AVG(rain_severity)",
+            "displayName": "Avg Rainfall Severity",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          }
+        ],
+        "version": "1.1",
+        "comment": "Monthly composite drought risk score (0-100) and tier per sub-county",
+        "dimensions": [
+          {
+            "name": "district_id",
+            "expr": "district_id"
+          },
+          {
+            "name": "as_of_month",
+            "expr": "as_of_month",
+            "displayName": "Assessment Month",
+            "format": {
+              "type": "date",
+              "dateFormat": "year_month_day"
+            }
+          },
+          {
+            "name": "risk_tier",
+            "expr": "risk_tier",
+            "displayName": "Risk Tier"
+          }
+        ]
+      }
+    },
+    {
+      "name": "districts",
+      "displayName": "Districts",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.climate_silver.districts",
+        "comment": "Kenyan sub-counties with geo coordinates and county mapping",
+        "dimensions": [
+          {
+            "name": "district_id",
+            "expr": "district_id",
+            "comment": "Unique sub-county identifier"
+          },
+          {
+            "name": "district_name",
+            "expr": "district_name",
+            "displayName": "District Name"
+          },
+          {
+            "name": "county_name",
+            "expr": "county_name",
+            "displayName": "County"
+          },
+          {
+            "name": "lat",
+            "expr": "lat",
+            "displayName": "Latitude"
+          },
+          {
+            "name": "lon",
+            "expr": "lon",
+            "displayName": "Longitude"
+          },
+          {
+            "name": "area_km2",
+            "expr": "area_km2",
+            "displayName": "Area (km²)",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "district_anomalies",
+      "displayName": "District Anomalies",
+      "config": {
+        "source": "workspace.climate_gold.district_anomalies",
+        "measures": [
+          {
+            "name": "avg_rain_z",
+            "expr": "AVG(rain_z)",
+            "displayName": "Avg Rainfall Z-Score",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          },
+          {
+            "name": "avg_soil_z",
+            "expr": "AVG(soil_z)",
+            "displayName": "Avg Soil Moisture Z-Score",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          },
+          {
+            "name": "avg_heat_z",
+            "expr": "AVG(heat_z)",
+            "displayName": "Avg Heat Z-Score",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          },
+          {
+            "name": "avg_rain_pct_normal",
+            "expr": "AVG(rain_pct_of_normal)",
+            "displayName": "Avg Rainfall % of Normal",
+            "format": {
+              "type": "percentage",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 1.0
+              }
+            }
+          }
+        ],
+        "version": "1.1",
+        "comment": "3-month rolling conditions compared with each sub-county 1991-2020 normal",
+        "dimensions": [
+          {
+            "name": "district_id",
+            "expr": "district_id"
+          },
+          {
+            "name": "month",
+            "expr": "month",
+            "displayName": "Month",
+            "format": {
+              "type": "date",
+              "dateFormat": "year_month_day"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "resource_allocation",
+      "displayName": "Resource Allocation",
+      "config": {
+        "source": "workspace.climate_gold.resource_allocation",
+        "measures": [
+          {
+            "name": "total_allocated_kes",
+            "expr": "SUM(allocated_kes)",
+            "displayName": "Total Allocated (KES)",
+            "format": {
+              "type": "currency",
+              "currencyCode": "KES",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              },
+              "abbreviation": "compact"
+            }
+          },
+          {
+            "name": "total_population",
+            "expr": "SUM(population)",
+            "displayName": "Total Population",
+            "format": {
+              "type": "number",
+              "abbreviation": "compact",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          },
+          {
+            "name": "avg_kes_per_person",
+            "expr": "AVG(kes_per_person)",
+            "displayName": "Avg KES per Person",
+            "format": {
+              "type": "currency",
+              "currencyCode": "KES",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          },
+          {
+            "name": "avg_need_weight",
+            "expr": "AVG(need_weight)",
+            "displayName": "Avg Need Weight",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          },
+          {
+            "name": "avg_share_pct",
+            "expr": "AVG(share_pct)",
+            "displayName": "Avg Allocation Share",
+            "format": {
+              "type": "percentage",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          }
+        ],
+        "version": "1.1",
+        "comment": "Drought-relief budget allocation per eligible rural sub-county",
+        "dimensions": [
+          {
+            "name": "as_of_month",
+            "expr": "as_of_month",
+            "displayName": "Allocation Month",
+            "format": {
+              "type": "date",
+              "dateFormat": "year_month_day"
+            }
+          },
+          {
+            "name": "county_name",
+            "expr": "county_name",
+            "displayName": "County"
+          },
+          {
+            "name": "district_name",
+            "expr": "district_name",
+            "displayName": "District"
+          },
+          {
+            "name": "district_id",
+            "expr": "district_id"
+          },
+          {
+            "name": "risk_tier",
+            "expr": "risk_tier",
+            "displayName": "Risk Tier"
+          }
+        ]
+      }
+    },
+    {
+      "name": "b97ae00c",
+      "displayName": "risk_trend",
+      "config": {
+        "version": "1.1",
+        "source": "SELECT as_of_month,\r\n       ROUND(100 * AVG(CASE WHEN risk_tier = 'High' THEN 1 ELSE 0 END), 1)     AS pct_high,\r\n       ROUND(100 * AVG(CASE WHEN risk_tier = 'Elevated' THEN 1 ELSE 0 END), 1) AS pct_elevated\r\nFROM workspace.climate_gold.district_risk_score\r\nWHERE as_of_month >= '2005-01-01'\r\nGROUP BY as_of_month",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "81a6f5d2",
+      "displayName": "allocation",
+      "config": {
+        "version": "1.1",
+        "source": "SELECT county_name, district_name, risk_tier, risk_score, population,\r\n       share_pct, allocated_kes, kes_per_person, as_of_month\r\nFROM workspace.climate_gold.resource_allocation",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    }
+  ],
+  "relationshipGraphs": [
+    {
+      "sources": [
+        {
+          "name": "Untitled_dataset",
+          "datasetName": "2e61b1a5"
+        },
+        {
+          "name": "District_Risk_Scores",
+          "datasetName": "risk_scores"
+        },
+        {
+          "name": "Districts",
+          "datasetName": "districts"
+        },
+        {
+          "name": "District_Anomalies",
+          "datasetName": "district_anomalies"
+        },
+        {
+          "name": "Resource_Allocation",
+          "datasetName": "resource_allocation"
+        },
+        {
+          "name": "Untitled_dataset_1",
+          "datasetName": "b97ae00c"
+        },
+        {
+          "name": "Untitled_dataset_2",
+          "datasetName": "81a6f5d2"
+        }
+      ],
+      "relationships": [
+        {
+          "name": "relationship_0",
+          "from": "District_Risk_Scores",
+          "to": "Districts",
+          "on": "`District_Risk_Scores`.`district_id` = `Districts`.`district_id`",
+          "cardinality": "CARDINALITY_MANY_TO_ONE"
+        },
+        {
+          "name": "relationship_1",
+          "from": "Resource_Allocation",
+          "to": "Districts",
+          "on": "`Resource_Allocation`.`district_id` = `Districts`.`district_id`",
+          "cardinality": "CARDINALITY_MANY_TO_ONE"
+        },
+        {
+          "name": "relationship_2",
+          "from": "District_Anomalies",
+          "to": "Districts",
+          "on": "`District_Anomalies`.`district_id` = `Districts`.`district_id`",
+          "cardinality": "CARDINALITY_MANY_TO_ONE"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "a83f92ef",
+      "displayName": "Kenya Drought Risk & Relief Allocation",
+      "layout": [
+        {
+          "widget": {
+            "name": "title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Kenya Drought Risk & Relief Allocation\n",
+                "Monthly drought risk assessment and relief budget allocation across Kenyan sub-counties."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_total_allocated",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "measure(Resource_Allocation__total_allocated_kes)",
+                      "expression": "MEASURE(`Resource_Allocation`.`total_allocated_kes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Total Relief Allocated"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Resource_Allocation__total_allocated_kes)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_population",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "measure(Resource_Allocation__total_population)",
+                      "expression": "MEASURE(`Resource_Allocation`.`total_population`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Population at Risk"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Resource_Allocation__total_population)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_avg_risk",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "avg(Untitled_dataset__risk_score)",
+                      "expression": "AVG(`Untitled_dataset`.`risk_score`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Average Risk Score",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(Untitled_dataset__risk_score)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_districts",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "measure(District_Risk_Scores__district_count)",
+                      "expression": "MEASURE(`District_Risk_Scores`.`district_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Districts Assessed"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(District_Risk_Scores__district_count)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_allocation_county",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "measure(Resource_Allocation__total_allocated_kes)",
+                      "expression": "MEASURE(`Resource_Allocation`.`total_allocated_kes`)"
+                    },
+                    {
+                      "name": "Resource_Allocation__county_name",
+                      "expression": "`Resource_Allocation`.`county_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Relief Allocation by County"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(Resource_Allocation__total_allocated_kes)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Resource_Allocation__county_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_risk_tier",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset__risk_tier",
+                      "expression": "`Untitled_dataset`.`risk_tier`"
+                    },
+                    {
+                      "name": "count(Untitled_dataset__district_name)",
+                      "expression": "COUNT(`Untitled_dataset`.`district_name`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Risk Assessments by Tier",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Untitled_dataset__risk_tier",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(Untitled_dataset__district_name)",
+                  "displayName": "Sub-counties",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset__risk_tier",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "High",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 4
+                        }
+                      },
+                      {
+                        "value": "Watch",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 2
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 5,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "line_allocation_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Resource_Allocation__risk_tier",
+                      "expression": "`Resource_Allocation`.`risk_tier`"
+                    },
+                    {
+                      "name": "measure(Resource_Allocation__total_allocated_kes)",
+                      "expression": "MEASURE(`Resource_Allocation`.`total_allocated_kes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Allocation by Risk Tier"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Resource_Allocation__risk_tier",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Resource_Allocation__total_allocated_kes)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 11,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "table_allocation",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Resource_Allocation__district_name",
+                      "expression": "`Resource_Allocation`.`district_name`"
+                    },
+                    {
+                      "name": "Resource_Allocation__county_name",
+                      "expression": "`Resource_Allocation`.`county_name`"
+                    },
+                    {
+                      "name": "Resource_Allocation__risk_tier",
+                      "expression": "`Resource_Allocation`.`risk_tier`"
+                    },
+                    {
+                      "name": "measure(Resource_Allocation__total_allocated_kes)",
+                      "expression": "MEASURE(`Resource_Allocation`.`total_allocated_kes`)"
+                    },
+                    {
+                      "name": "measure(Resource_Allocation__total_population)",
+                      "expression": "MEASURE(`Resource_Allocation`.`total_population`)"
+                    },
+                    {
+                      "name": "measure(Resource_Allocation__avg_kes_per_person)",
+                      "expression": "MEASURE(`Resource_Allocation`.`avg_kes_per_person`)"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "MEASURE(`Resource_Allocation`.`total_allocated_kes`)"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Relief Allocation Detail"
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Resource_Allocation__district_name",
+                    "displayName": "District"
+                  },
+                  {
+                    "fieldName": "Resource_Allocation__county_name",
+                    "displayName": "County"
+                  },
+                  {
+                    "fieldName": "Resource_Allocation__risk_tier",
+                    "displayName": "Risk Tier"
+                  },
+                  {
+                    "fieldName": "measure(Resource_Allocation__total_allocated_kes)",
+                    "displayName": "Allocated (KES)"
+                  },
+                  {
+                    "fieldName": "measure(Resource_Allocation__total_population)",
+                    "displayName": "Population"
+                  },
+                  {
+                    "fieldName": "measure(Resource_Allocation__avg_kes_per_person)",
+                    "displayName": "KES/Person"
+                  }
+                ],
+                "rowOrder": [
+                  {
+                    "by": "column-reversed",
+                    "field": {
+                      "index": 3
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "drought-risk-by-district",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset__county_name",
+                      "expression": "`Untitled_dataset`.`county_name`"
+                    },
+                    {
+                      "name": "Untitled_dataset__district_name",
+                      "expression": "`Untitled_dataset`.`district_name`"
+                    },
+                    {
+                      "name": "Untitled_dataset__risk_tier",
+                      "expression": "`Untitled_dataset`.`risk_tier`"
+                    },
+                    {
+                      "name": "Untitled_dataset__risk_score",
+                      "expression": "`Untitled_dataset`.`risk_score`"
+                    },
+                    {
+                      "name": "Untitled_dataset__rain_pct_of_normal",
+                      "expression": "`Untitled_dataset`.`rain_pct_of_normal`"
+                    }
+                  ],
+                  "disaggregated": true,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "`Untitled_dataset`.`risk_score`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Drought Risk by District",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Untitled_dataset__county_name",
+                    "displayName": "County"
+                  },
+                  {
+                    "fieldName": "Untitled_dataset__district_name",
+                    "displayName": "District"
+                  },
+                  {
+                    "fieldName": "Untitled_dataset__risk_tier",
+                    "displayName": "Risk Tier"
+                  },
+                  {
+                    "fieldName": "Untitled_dataset__risk_score",
+                    "displayName": "Risk Score"
+                  },
+                  {
+                    "fieldName": "Untitled_dataset__rain_pct_of_normal",
+                    "displayName": "Rain (% of normal)"
+                  }
+                ],
+                "rowOrder": [
+                  {
+                    "by": "column-reversed",
+                    "field": {
+                      "index": 3
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 17,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "share-of-sub-counties-at-high-elevated-drought-risk-2005-2025",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "monthly(Untitled_dataset_1__as_of_month)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `Untitled_dataset_1`.`as_of_month`)"
+                    },
+                    {
+                      "name": "sum(Untitled_dataset_1__pct_high)",
+                      "expression": "SUM(`Untitled_dataset_1`.`pct_high`)"
+                    },
+                    {
+                      "name": "sum(Untitled_dataset_1__pct_elevated)",
+                      "expression": "SUM(`Untitled_dataset_1`.`pct_elevated`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "**Share of sub-counties at High / Elevated drought risk**",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  }
+                ]
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(Untitled_dataset_1__as_of_month)",
+                  "displayName": "Months",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "fields": [
+                    {
+                      "fieldName": "sum(Untitled_dataset_1__pct_high)",
+                      "displayName": "High"
+                    },
+                    {
+                      "fieldName": "sum(Untitled_dataset_1__pct_elevated)",
+                      "displayName": "Elevated"
+                    }
+                  ],
+                  "axis": {
+                    "title": "Of sub-counties"
+                  }
+                },
+                "color": {
+                  "legend": {
+                    "hideTitle": false,
+                    "hide": false
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "month",
+            "queries": [
+              {
+                "name": "dashboards/01f1ba905ff51bb09a0e954690b65961/datasets/01f1ba90924d1cd991eddcd939594784_as_of_month",
+                "query": {
+                  "datasetName": "2e61b1a5",
+                  "fields": [
+                    {
+                      "name": "as_of_month",
+                      "expression": "`as_of_month`"
+                    },
+                    {
+                      "name": "as_of_month_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block;\">Month</span>",
+                  "fields": []
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "as_of_month",
+                    "queryName": "dashboards/01f1ba905ff51bb09a0e954690b65961/datasets/01f1ba90924d1cd991eddcd939594784_as_of_month"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "82eeffe3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset__risk_tier",
+                      "expression": "`Untitled_dataset`.`risk_tier`"
+                    },
+                    {
+                      "name": "Untitled_dataset__lat",
+                      "expression": "`Untitled_dataset`.`lat`"
+                    },
+                    {
+                      "name": "Untitled_dataset__lon",
+                      "expression": "`Untitled_dataset`.`lon`"
+                    },
+                    {
+                      "name": "Untitled_dataset__district_name",
+                      "expression": "`Untitled_dataset`.`district_name`"
+                    },
+                    {
+                      "name": "Untitled_dataset__county_name",
+                      "expression": "`Untitled_dataset`.`county_name`"
+                    },
+                    {
+                      "name": "Untitled_dataset__risk_score",
+                      "expression": "`Untitled_dataset`.`risk_score`"
+                    },
+                    {
+                      "name": "Untitled_dataset__rain_pct_of_normal",
+                      "expression": "`Untitled_dataset`.`rain_pct_of_normal`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "symbol-map",
+              "encodings": {
+                "coordinates": {
+                  "latitude": {
+                    "fieldName": "Untitled_dataset__lat"
+                  },
+                  "longitude": {
+                    "fieldName": "Untitled_dataset__lon"
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset__risk_tier",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "High",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 4
+                        }
+                      },
+                      {
+                        "value": "Watch",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 2
+                        }
+                      }
+                    ]
+                  }
+                },
+                "extra": [
+                  {
+                    "fieldName": "Untitled_dataset__district_name"
+                  },
+                  {
+                    "fieldName": "Untitled_dataset__county_name"
+                  },
+                  {
+                    "fieldName": "Untitled_dataset__risk_score"
+                  },
+                  {
+                    "fieldName": "Untitled_dataset__rain_pct_of_normal"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 23,
+            "width": 4,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
