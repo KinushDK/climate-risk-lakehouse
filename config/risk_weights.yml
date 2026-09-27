@@ -6,9 +6,9 @@ weights:
   low_soil_carbon: 0.15
 
 tiers:
-  high: 75
-  elevated: 55
-  watch: 35
+  high: 55
+  elevated: 40
+  watch: 25
 
 baseline_years: [1991, 2020]
 heat_threshold_c: 35
