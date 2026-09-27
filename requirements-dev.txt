@@ -1,0 +1,4 @@
+pytest
+pyyaml
+pandas
+pyspark==3.5.3
