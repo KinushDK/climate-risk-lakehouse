@@ -11,13 +11,6 @@ CREATE SCHEMA IF NOT EXISTS workspace.climate_silver
 CREATE SCHEMA IF NOT EXISTS workspace.climate_gold
   COMMENT 'Business-ready risk scores and allocations';
 
--- Subdirectories (districts, weather, soil, population) inside the landing volume
--- are auto-created when files are first written to them during ingestion.
--- To pre-create them, run this in a Python notebook or .py file:
---   base = "/Volumes/workspace/climate_raw/landing"
---   for folder in ["districts", "weather", "soil", "population"]:
---       dbutils.fs.mkdirs(f"{base}/{folder}")
---   display(dbutils.fs.ls(base))
 
 
 SHOW SCHEMAS IN workspace LIKE 'climate*';
