@@ -50,3 +50,6 @@ Tana River, Wajir and Mandera — Kenya's arid and semi-arid counties most affec
   
 - **Rainfall scoring:** plain z-scores understate droughts in arid areas, where rainfall varies widely year to year. Tier thresholds were calibrated on the 2022 drought and validated on
   2010 and 2016. Planned v2: replace z-scores with a gamma-fitted SPI.
+  
+ - **Population:** WorldPop's unconstrained estimates placed ~2.3M people in Mandera versus ~0.87M in the 2019 census. Sub-county populations are therefore calibrated to official
+  KNBS 2019 county totals, using WorldPop only for the distribution within each county.
