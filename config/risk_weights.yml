@@ -12,3 +12,4 @@ tiers:
 
 baseline_years: [1991, 2020]
 heat_threshold_c: 35
+urban_density_per_km2: 2000
