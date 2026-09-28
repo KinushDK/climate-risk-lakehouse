@@ -6,6 +6,15 @@
 
 **Solution:** A Databricks lakehouse that ingests 41 years of daily climate data plus soil and population data, cleans and validates it through a Bronze → Silver → Gold pipeline, and produces a monthly, explainable drought-risk score and budget allocation for every sub-county. It runs as a scheduled, monitored job, with automated tests on every push.
 
+## Why I built this
+
+Drought is one of the most costly and recurring climate shocks in Kenya. Between 2020 and 2023, five rainy seasons failed in a row, and relief agencies had to decide where to send limited
+resources first. Those decisions depend on data that is usually scattered across portals, APIs and PDF reports.
+
+I wanted to build the kind of pipeline that sits behind those decisions: one that turns raw, messy public data into a trustworthy, explainable answer that a programme manager could act on.
+I also wanted to practise the engineering that makes data trustworthy in production: incremental ingestion, validation and quarantine, calibration against official statistics,
+testing, orchestration and monitoring, rather than a one-off analysis in a notebook.
+
 **Stack:** Databricks · PySpark · SQL · Delta Lake · Unity Catalog · Auto Loader · Lakeflow Jobs · AI/BI Dashboards · GitHub Actions · pytest
 
 ![Dashboard overview](docs/images/dashboard_overview.png)
