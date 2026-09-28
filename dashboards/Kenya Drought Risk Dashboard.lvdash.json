@@ -1247,6 +1247,10 @@
                       },
                       {
                         "value": "Watch",
+                        "color": "#FFF400"
+                      },
+                      {
+                        "value": "Elevated",
                         "color": {
                           "themeColorType": "visualizationColors",
                           "position": 2
